@@ -1,14 +1,12 @@
 from __future__ import print_function
 import csv
-import numpy as np
 import pandas as pd
 import c3d
-import sys
 import matplotlib.pyplot as plt
 
 reader = c3d.Reader(open('ok1.c3d', 'rb'))
 list_of_markers = reader.point_labels
-
+frames = 0
 
 def read_frames(marker_no, frame_stop):
   print('Wybrano marker: ', list_of_markers[int(marker_no)])
@@ -35,13 +33,15 @@ def list_of_frames(marker_no, frame_stop):
 def daneodczyt(plik):
     inputf = open(plik + '.c3d', 'rb')
     data = []
+    global frames
     for frame_no, points, analog in c3d.Reader(inputf).read_frames(copy=False):
         fields = [frame_no]
+        frames = frame_no
         for x, y, z, err, cam in points:
             fields.append(str(x))
             fields.append(str(y))
             fields.append(str(z))
-            data = fields
+        data.append(fields)
     zapis_dane(plik, data)
 
 
@@ -55,6 +55,7 @@ def integrate(frame_stop, list_of):
         x += dx
         fx2 = list_of[int(x)]
         integr += 0.5 * dx * (fx1 + fx2)
+    print("Wynik całkowania dla markera " + marker_no + " : " + str(integr))
     zapiswynik(marker_no, integr)
     return integr
 
@@ -65,12 +66,9 @@ def zapis_dane(plik, fields):
         column.append(z + ' os X')
         column.append(z + ' os Y')
         column.append(z + ' os Z')
-    print(type(column))
     column.insert(0, 'frame')
-    df_data = pd.DataFrame(fields)
-    df_data_trans = df_data.T
-    df_data_trans.columns = column
-    df_data_trans.to_csv('dane_' + plik + '.csv', sep=';')
+    df = pd.DataFrame(fields, columns=column)
+    df.to_csv('dane_' + plik + '.csv', sep=';')
 
 
 def zapiswynik(marker_no, integr):
@@ -98,7 +96,7 @@ def zapiswynik(marker_no, integr):
             writer.writerow(wynik)
 
 
-
+# print("")
 print("Wprowadź nazwę pliku")
 plik = input()
 print("Wprowadź numer markeru")

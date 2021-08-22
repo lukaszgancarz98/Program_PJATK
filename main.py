@@ -6,28 +6,27 @@ import matplotlib.pyplot as plt
 
 reader = c3d.Reader(open('ok1.c3d', 'rb'))
 list_of_markers = reader.point_labels
-frames = 0
 
-def read_frames(marker_no, frame_stop):
+def read_frames(marker_no):
   print('Wybrano marker: ', list_of_markers[int(marker_no)])
-  for frame_no, points, analog in reader.read_frames():
-    if int(frame_stop) > frame_no + 1:
-        type(points[int(marker_no)][:3])
+  # for frame_no, points, analog in reader.read_frames():
+  #   if int(frame_stop) > frame_no + 1:
+  #       type(points[int(marker_no)][:3])
     # print(points[marker_no][:3])
     # x_LFHD = list_of_frames(0, 0)
 
 
-def list_of_frames(marker_no, frame_stop):
+def list_of_frames(marker_no, frames_start, frame_stop):
   list_of = []
   global axis
   global list_of_markers
-  print('Wybrano marker: ', list_of_markers[int(marker_no)])
+  # print('Wybrano marker: ', list_of_markers[int(marker_no)])
   count = 0
   for frame_no, points, analog in reader.read_frames():
-    if count < int(frame_stop):
+    if count <= int(frame_stop):
         list_of.append(points[int(marker_no)][int(axis)])
         count += 1
-  integrate(frame_stop, list_of)
+  integrate(frames_start, frame_stop, list_of)
   return list_of
 
 def daneodczyt(plik):
@@ -43,13 +42,16 @@ def daneodczyt(plik):
             fields.append(str(z))
         data.append(fields)
     zapis_dane(plik, data)
+    print("Zapisano")
 
 
-def integrate(frame_stop, list_of):
-    dx = (int(frame_stop) - 0) / int(frame_stop)
+def integrate(frames_start, frame_stop, list_of):
+    dx = 1
     integr = 0
-    i = int(frame_stop) - 1
-    for x in range(i):
+    # i = int(frame_stop) - 1
+    print(list_of[int(frames_start)], "start")
+    print(list_of[int(frame_stop)], "stop")
+    for x in range(int(frames_start), int(frame_stop)):
         x = x * dx + 0
         fx1 = list_of[int(x)]
         x += dx
@@ -94,20 +96,29 @@ def zapiswynik(marker_no, integr):
             writer = csv.writer(csv_file)
             writer.writerow(new_list)
             writer.writerow(wynik)
-
-
-# print("")
-print("Wprowadź nazwę pliku")
-plik = input()
-print("Wprowadź numer markeru")
-marker_no = input()
-print("Wprowadź ilość klatek")
-frame_stop = input()
-read_frames(marker_no, frame_stop)
-print("Wybierz oś:"
-      "0 - x"
-      "1 - y"
-      "2 - z")
-axis = input()
-list_of_frames(marker_no, frame_stop)
-daneodczyt(plik)
+while True:
+    print("Wprowadź nazwę pliku")
+    plik = input()
+    print("Wybierz działanie: ")
+    print("1 -- Dane z pliku")
+    print("2 -- Całkowanie")
+    print("3 -- Wyjście z aplikacji")
+    wybor = input()
+    if int(wybor) == 2:
+        print("Wprowadź numer markeru")
+        marker_no = input()
+        read_frames(marker_no)
+        print("Wprowadz początek przedziału")
+        frames_start = input()
+        print("Wprowadź koniec przedziału")
+        frame_stop = input()
+        print("Wybierz oś:")
+        print("0 - x")
+        print("1 - y")
+        print("2 - z")
+        axis = input()
+        list_of_frames(marker_no, frames_start, frame_stop)
+    elif int(wybor) == 1:
+        daneodczyt(plik)
+    elif int(wybor) == 3:
+        exit()

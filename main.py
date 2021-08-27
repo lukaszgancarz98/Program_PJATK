@@ -58,7 +58,7 @@ def integrate(frames_start, frame_stop, list_of):
         fx2 = list_of[int(x)]
         integr += 0.5 * dx * (fx1 + fx2)
     print("Wynik całkowania dla markera " + marker_no + " : " + str(integr))
-    zapiswynik(marker_no, integr)
+    zapiswynik(marker_no, integr, frames_start, frame_stop)
     return integr
 
 
@@ -73,27 +73,39 @@ def zapis_dane(plik, fields):
     df.to_csv('dane_' + plik + '.csv', sep=';')
 
 
-def zapiswynik(marker_no, integr):
+def zapiswynik(marker_no, integr, frames_start, frame_stop):
     print(axis)
     if int(axis) == 0:
         with open('wynik_całkowania_os_x_'+ list_of_markers[int(marker_no)] + '.csv', 'w', encoding='utf-8') as csv_file:
             new_list = [str(list_of_markers[int(marker_no)])]
             wynik = [str(integr)]
+            start = ["Od klatki: ", str(frames_start)]
+            stop = ["Do klatki: ", str(frame_stop)]
             writer = csv.writer(csv_file)
             writer.writerow(new_list)
+            writer.writerow(start)
+            writer.writerow(stop)
             writer.writerow(wynik)
     if int(axis) == 1:
         with open('wynik_całkowania_os_y_'+ list_of_markers[int(marker_no)] + '.csv', 'w', encoding='utf-8') as csv_file:
             new_list = [str(list_of_markers[int(marker_no)])]
             wynik = [str(integr)]
+            start = ["Od klatki: ", str(frames_start)]
+            stop = ["Do klatki: ", str(frame_stop)]
             writer = csv.writer(csv_file)
             writer.writerow(new_list)
+            writer.writerow(start)
+            writer.writerow(stop)
             writer.writerow(wynik)
     if int(axis) == 2:
         with open('wynik_całkowania_os_z_'+ list_of_markers[int(marker_no)] + '.csv', 'w', encoding='utf-8') as csv_file:
             new_list = [str(list_of_markers[int(marker_no)])]
-            wynik = [str(integr)]
+            start = ["Od klatki: ", str(frames_start)]
+            stop = ["Do klatki: ", str(frame_stop)]
+            wynik = ["Wynik: ", str(integr)]
             writer = csv.writer(csv_file)
+            writer.writerow(start)
+            writer.writerow(stop)
             writer.writerow(new_list)
             writer.writerow(wynik)
 while True:
